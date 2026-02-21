@@ -1,4 +1,8 @@
 const Task = require('../models/Task');
+const mockDb = require('../utils/mockDb');
+const mongoose = require('mongoose');
+
+const useMock = () => mongoose.connection.readyState !== 1;
 
 // Get all tasks for user (with search and filter)
 exports.getTasks = async (req, res) => {
@@ -16,15 +20,19 @@ exports.getTasks = async (req, res) => {
             query.priority = priority;
         }
 
-        let sort = {};
-        if (sortBy) {
-            const parts = sortBy.split(':');
-            sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
+        let tasks;
+        if (useMock()) {
+            tasks = (await mockDb.tasks.find(query)).sort();
         } else {
-            sort.createdAt = -1;
+            let sort = {};
+            if (sortBy) {
+                const parts = sortBy.split(':');
+                sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
+            } else {
+                sort.createdAt = -1;
+            }
+            tasks = await Task.find(query).sort(sort);
         }
-
-        const tasks = await Task.find(query).sort(sort);
         res.json(tasks);
     } catch (err) {
         console.error(err.message);
@@ -37,15 +45,25 @@ exports.createTask = async (req, res) => {
     const { title, description, status, priority } = req.body;
 
     try {
-        const newTask = new Task({
-            title,
-            description,
-            status,
-            priority,
-            userId: req.user.id
-        });
-
-        const task = await newTask.save();
+        let task;
+        if (useMock()) {
+            task = await mockDb.tasks.create({
+                title,
+                description,
+                status,
+                priority,
+                userId: req.user.id
+            });
+        } else {
+            const newTask = new Task({
+                title,
+                description,
+                status,
+                priority,
+                userId: req.user.id
+            });
+            task = await newTask.save();
+        }
         res.json(task);
     } catch (err) {
         console.error(err.message);
@@ -58,7 +76,12 @@ exports.updateTask = async (req, res) => {
     const { title, description, status, priority } = req.body;
 
     try {
-        let task = await Task.findById(req.params.id);
+        let task;
+        if (useMock()) {
+            task = await mockDb.tasks.findById(req.params.id);
+        } else {
+            task = await Task.findById(req.params.id);
+        }
 
         if (!task) return res.status(404).json({ msg: 'Task not found' });
 
@@ -73,11 +96,15 @@ exports.updateTask = async (req, res) => {
         if (status) taskFields.status = status;
         if (priority) taskFields.priority = priority;
 
-        task = await Task.findByIdAndUpdate(
-            req.params.id,
-            { $set: taskFields },
-            { new: true }
-        );
+        if (useMock()) {
+            task = await mockDb.tasks.findByIdAndUpdate(req.params.id, taskFields);
+        } else {
+            task = await Task.findByIdAndUpdate(
+                req.params.id,
+                { $set: taskFields },
+                { new: true }
+            );
+        }
 
         res.json(task);
     } catch (err) {
@@ -89,7 +116,12 @@ exports.updateTask = async (req, res) => {
 // Delete a task
 exports.deleteTask = async (req, res) => {
     try {
-        let task = await Task.findById(req.params.id);
+        let task;
+        if (useMock()) {
+            task = await mockDb.tasks.findById(req.params.id);
+        } else {
+            task = await Task.findById(req.params.id);
+        }
 
         if (!task) return res.status(404).json({ msg: 'Task not found' });
 
@@ -98,7 +130,11 @@ exports.deleteTask = async (req, res) => {
             return res.status(401).json({ msg: 'Not authorized' });
         }
 
-        await Task.findByIdAndDelete(req.params.id);
+        if (useMock()) {
+            await mockDb.tasks.findByIdAndDelete(req.params.id);
+        } else {
+            await Task.findByIdAndDelete(req.params.id);
+        }
         res.json({ msg: 'Task removed' });
     } catch (err) {
         console.error(err.message);

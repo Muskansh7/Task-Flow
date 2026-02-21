@@ -1,0 +1,14 @@
+{
+    "name": "taskflow-root",
+    "version": "1.0.0",
+    "description": "Root manager for TaskFlow",
+    "scripts": {
+        "install-all": "npm install && cd server && npm install && cd ../client && npm install",
+        "dev": "concurrently \"cd server && npm start\" \"cd client && npm run dev\"",
+        "start-backend": "cd server && npm start",
+        "start-frontend": "cd client && npm run dev"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

@@ -78,19 +78,6 @@ export default function Dashboard() {
     return (
         <ProtectedRoute>
             <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-                {/* Navigation */}
-                <nav className="glass" style={{ padding: '1rem 2rem', position: 'sticky', top: 0, zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h1 className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 800 }}>TaskFlow</h1>
-                    <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)' }}>
-                            <User size={18} />
-                            <span style={{ fontSize: '0.9rem' }}>{user?.name}</span>
-                        </div>
-                        <button onClick={logout} style={{ color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem', fontWeight: 600 }}>
-                            <LogOut size={18} /> Logout
-                        </button>
-                    </div>
-                </nav>
 
                 <main className="container" style={{ padding: '2rem 0' }}>
                     {/* Header & Controls */}
@@ -147,7 +134,17 @@ export default function Dashboard() {
                     ) : (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
                             {tasks.map((task: any) => (
-                                <div key={task._id} className="glass fade-in" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <div
+                                    key={task._id}
+                                    className={`glass fade-in task-card ${task.priority === 'high' ? 'priority-high' : ''}`}
+                                    style={{
+                                        padding: '1.5rem',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '1rem',
+                                        border: task.priority === 'high' ? '1px solid rgba(255, 77, 77, 0.5)' : task.priority === 'medium' ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid var(--border)',
+                                    }}
+                                >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                         <h3 style={{ fontSize: '1.2rem', fontWeight: 600 }}>{task.title}</h3>
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -231,6 +228,17 @@ export default function Dashboard() {
                     </div>
                 )}
             </div>
+            <style jsx>{`
+                .task-card {
+                    transition: all 0.3s ease;
+                }
+                .task-card:hover {
+                    transform: translateY(-5px);
+                }
+                .priority-high {
+                    background: linear-gradient(135deg, rgba(255, 77, 77, 0.05) 0%, rgba(10, 10, 12, 0.8) 100%);
+                }
+            `}</style>
         </ProtectedRoute>
     );
 }

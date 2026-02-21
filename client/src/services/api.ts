@@ -34,6 +34,11 @@ export const taskService = {
     createTask: (taskData: any) => api.post('/tasks', taskData),
     updateTask: (id: string, taskData: any) => api.put(`/tasks/${id}`, taskData),
     deleteTask: (id: string) => api.delete(`/tasks/${id}`),
+
+    // Flashcards
+    getFlashcards: () => api.get('/flashcards'),
+    createFlashcard: (data: { question: string, answer: string }) => api.post('/flashcards', data),
+    deleteFlashcard: (id: string) => api.delete(`/flashcards/${id}`),
 };
 
 export default api;
