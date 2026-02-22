@@ -2,8 +2,11 @@
   "name": "taskflow-root",
   "version": "1.0.0",
   "description": "Root manager for TaskFlow",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
-    "build": "cd client && npm install && npm run build && mkdir -p ../server/client-dist && mv dist/* ../server/client-dist/",
+    "build": "cd client && npm install && npm run build && cd .. && mkdir -p server/client-dist && cp -r client/dist/* server/client-dist/",
     "start": "cd server && npm install && node index.js"
   }
 }
