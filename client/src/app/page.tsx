@@ -33,10 +33,10 @@ export default function Home() {
                         Experience the most beautiful and fluid way to manage your work. TaskFlow combines premium design with powerful performance to keep you ahead.
                     </p>
                     <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                        <Link href="/register" className="btn-primary">
+                        <Link href="/dashboard" className="btn-primary">
                             Start Building Now
                         </Link>
-                        <Link href="/login" className="btn-secondary glass">
+                        <Link href="/dashboard" className="btn-secondary glass">
                             Explore Dashboard
                         </Link>
                     </div>
