@@ -39,10 +39,14 @@ app.use('/api/flashcards', flashcardRoutes);
 // ======================
 // Serve Frontend (Production)
 // ======================
-app.use(express.static(path.join(__dirname, 'client-dist')));
+const clientPath = path.join(__dirname, 'client-dist');
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client-dist', 'index.html'));
+// Serve static files
+app.use(express.static(clientPath));
+
+// Catch-all route (Express 5 compatible)
+app.use((req, res) => {
+    res.sendFile(path.join(clientPath, 'index.html'));
 });
 
 // ======================
